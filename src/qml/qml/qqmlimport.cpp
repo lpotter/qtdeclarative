@@ -1282,6 +1282,7 @@ bool QQmlImportsPrivate::locateQmldir(const QString &uri, int vmaj, int vmin, QQ
                 interceptor ? QQmlImportDatabase::LocalOrRemote : QQmlImportDatabase::Local);
 
     // Search local import paths for a matching version
+    QStringList localImportPaths = database->importPathList(QQmlImportDatabase::Local);
     const QStringList qmlDirPaths = QQmlImports::completeQmldirPaths(uri, localImportPaths, vmaj, vmin);
     for (QString qmldirPath : qmlDirPaths) {
         if (interceptor) {
@@ -1756,10 +1757,16 @@ QQmlImportDatabase::QQmlImportDatabase(QQmlEngine *e)
 {
     filePluginPath << QLatin1String(".");
     // Search order is applicationDirPath(), qrc:/qt-project.org/imports, $QML2_IMPORT_PATH, QLibraryInfo::Qml2ImportsPath
+#ifdef Q_OS_HTML5
+       // Hardcode the qml imports to "qml/" relative to the app nexe.
+       // This should perhaps be set via Qml2Imports in qt.conf.
+      QString installImportsPath = QStringLiteral("qml/");
 
-    QString installImportsPath =  QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
+#else
+    QString installImportsPath = QLibraryInfo::location(QLibraryInfo::Qml2ImportsPath);
+#endif
+
     addImportPath(installImportsPath);
-
     // env import paths
     if (Q_UNLIKELY(!qEnvironmentVariableIsEmpty("QML2_IMPORT_PATH"))) {
         const QString envImportPath = qEnvironmentVariable("QML2_IMPORT_PATH");

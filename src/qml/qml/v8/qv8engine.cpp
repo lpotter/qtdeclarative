@@ -129,10 +129,12 @@ QV8Engine::QV8Engine(QJSEngine *qq, QV4::ExecutionEngine *v4)
     , m_v4Engine(v4)
     , m_xmlHttpRequestData(0)
 {
+#ifndef Q_OS_HTML5
 #ifdef Q_PROCESSOR_X86_32
     if (!qCpuHasFeature(SSE2)) {
         qFatal("This program requires an X86 processor that supports SSE2 extension, at least a Pentium 4 or newer");
     }
+#endif
 #endif
 
     QML_MEMORY_SCOPE_STRING("QV8Engine::QV8Engine");
