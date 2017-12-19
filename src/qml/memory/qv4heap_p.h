@@ -70,6 +70,7 @@ struct InternalClass;
 struct VTable
 {
     const VTable * const parent;
+#ifndef QT_NO_BITFIELDS
     uint inlinePropertyOffset : 16;
     uint nInlineProperties : 16;
     uint isExecutionContext : 1;
@@ -80,6 +81,18 @@ struct VTable
     uint isArrayData : 1;
     uint unused : 18;
     uint type : 8;
+#else
+    uint inlinePropertyOffset = 16;
+    uint nInlineProperties = 16;
+    uint isExecutionContext = 1;
+    uint isString = 1;
+    uint isObject = 1;
+    uint isFunctionObject = 1;
+    uint isErrorObject = 1;
+    uint isArrayData = 1;
+    uint unused = 18;
+    uint type = 8;
+#endif
     const char *className;
     void (*destroy)(Heap::Base *);
     void (*markObjects)(Heap::Base *, MarkStack *markStack);
