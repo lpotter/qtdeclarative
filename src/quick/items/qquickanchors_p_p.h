@@ -182,7 +182,7 @@ public:
 
     // The bit fields below are carefully laid out in chunks of 1 byte, so the compiler doesn't
     // need to generate 2 loads (and combining shifts/ors) to create a single field.
-
+#ifndef QT_NO_BITFIELDS
     QQuickAnchors::Anchor leftAnchorLine     : 7;
     uint leftMarginExplicit                  : 1;
     QQuickAnchors::Anchor rightAnchorLine    : 7;
@@ -200,7 +200,25 @@ public:
     uint centerAligned                       : 1;
     uint usedAnchors                         : 7; // QQuickAnchors::Anchors
     uint componentComplete                   : 1;
+#else
+    QQuickAnchors::Anchor leftAnchorLine;
+    uint leftMarginExplicit;
+    QQuickAnchors::Anchor rightAnchorLine;
+    uint rightMarginExplicit;
+    QQuickAnchors::Anchor topAnchorLine;
+    uint topMarginExplicit;
+    QQuickAnchors::Anchor bottomAnchorLine;
+    uint bottomMarginExplicit;
 
+    QQuickAnchors::Anchor vCenterAnchorLine;
+    uint updatingMe;
+    QQuickAnchors::Anchor hCenterAnchorLine;
+    uint inDestructor;
+    QQuickAnchors::Anchor baselineAnchorLine;
+    uint centerAligned;
+    uint usedAnchors; // QQuickAnchors::Anchors
+    uint componentComplete;
+#endif
     // Instead of using a mostly empty bit field, we can stretch the following fields up to be full
     // bytes. The advantage is that incrementing/decrementing does not need any combining ands/ors.
     qint8 updatingFill;

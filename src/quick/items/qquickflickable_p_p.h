@@ -156,6 +156,7 @@ public:
         int vTime;
         QQuickFlickablePrivate::Velocity smoothVelocity;
         QPODVector<qreal,10> velocityBuffer;
+#ifndef QT_NO_BITFIELDS
         bool atEnd : 1;
         bool atBeginning : 1;
         bool transitionToSet : 1;
@@ -170,6 +171,22 @@ public:
         mutable bool minExtentDirty : 1;
         mutable bool maxExtentDirty : 1;
         uint unused : 19;
+#else
+        bool atEnd;
+        bool atBeginning;
+        bool transitionToSet;
+        bool fixingUp;
+        bool inOvershoot;
+        bool inRebound;
+        bool moving;
+        bool flicking;
+        bool dragging;
+        bool extentsChanged;
+        bool explicitValue;
+        mutable bool minExtentDirty;
+        mutable bool maxExtentDirty;
+        uint unused;
+#endif
     };
 
     bool flickX(qreal velocity);
