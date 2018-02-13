@@ -392,6 +392,12 @@ void QQmlThread::internalPostMethodToThread(Message *message)
 
 void QQmlThread::internalPostMethodToMain(Message *message)
 {
+#ifdef Q_OS_HTML5
+    if (!isThisThread()) {
+        internalPostMethodToThread(message);
+        return;
+    }
+#endif
     Q_ASSERT(isThisThread());
     d->lock();
     bool wasEmpty = d->mainList.isEmpty();
