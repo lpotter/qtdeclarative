@@ -161,12 +161,19 @@ public:
     QQuickItem *item;
     QQuickItemViewTransitionJob *transition;
     QQuickItemViewTransitioner::TransitionType nextTransitionType;
+#ifndef QT_NO_BITFIELDS
     bool isTransitionTarget : 1;
     bool nextTransitionToSet : 1;
     bool nextTransitionFromSet : 1;
     bool lastMovedToSet : 1;
     bool prepared : 1;
-
+#else
+    bool isTransitionTarget;
+    bool nextTransitionToSet;
+    bool nextTransitionFromSet;
+    bool lastMovedToSet;
+    bool prepare;
+#endif
 private:
     friend class QQuickItemViewTransitioner;
     friend class QQuickItemViewTransitionJob;
