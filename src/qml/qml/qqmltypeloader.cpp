@@ -497,8 +497,8 @@ void QQmlDataBlob::addDependency(QQmlDataBlob *blob)
 {
 #ifndef Q_OS_HTML5
     ASSERT_CALLBACK();
-#endif
     Q_ASSERT(status() != Null);
+#endif
 
     if (!blob ||
         blob->status() == Error || blob->status() == Complete ||
