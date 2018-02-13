@@ -381,9 +381,13 @@ public:
         // rare to use any of the other buttons.
         Qt::MouseButtons acceptedMouseButtons;
 
+#ifndef QT_NO_BITFIELDS
         QQuickItem::TransformOrigin origin:5;
         uint transparentForPositioner : 1;
-
+#else
+        QQuickItem::TransformOrigin origin;
+        uint transparentForPositioner;
+#endif
         // 26 bits padding
     };
     QLazilyAllocated<ExtraData> extra;
@@ -410,6 +414,7 @@ public:
     inline QQuickItem::TransformOrigin origin() const;
 
     // Bit 0
+#ifndef QT_NO_BITFIELDS
     quint32 flags:5;
     bool widthValid:1;
     bool heightValid:1;
@@ -452,7 +457,50 @@ public:
     bool isTabFence:1;
     bool replayingPressEvent:1;
     bool touchEnabled:1;
-
+#else
+    quint32 flags;
+    bool widthValid;
+    bool heightValid;
+    bool componentComplete;
+    bool keepMouse;
+    bool keepTouch;
+    bool hoverEnabled;
+    bool smooth;
+    bool antialiasing;
+    bool focus;
+    bool activeFocus;
+    bool notifiedFocus;
+    // Bit 16
+    bool notifiedActiveFocus;
+    bool filtersChildMouseEvents;
+    bool explicitVisible;
+    bool effectiveVisible;
+    bool explicitEnable;
+    bool effectiveEnable;
+    bool polishScheduled;
+    bool inheritedLayoutMirror;
+    bool effectiveLayoutMirror;
+    bool isMirrorImplicit;
+    bool inheritMirrorFromParent;
+    bool inheritMirrorFromItem;
+    bool isAccessible;
+    bool culled;
+    bool hasCursor;
+    bool subtreeCursorEnabled;
+    // Bit 32
+    bool subtreeHoverEnabled;
+    bool activeFocusOnTab;
+    bool implicitAntialiasing;
+    bool antialiasingValid;
+    // isTabFence: When true, the item acts as a fence within the tab focus chain.
+    // This means that the item and its children will be skipped from the tab focus
+    // chain when navigating from its parent or any of its siblings. Similarly,
+    // when any of the item's descendants gets focus, the item constrains the tab
+    // focus chain and prevents tabbing outside.
+    bool isTabFence;
+    bool replayingPressEvent;
+    bool touchEnabled;
+#endif
     enum DirtyType {
         TransformOrigin         = 0x00000001,
         Transform               = 0x00000002,
@@ -672,12 +720,22 @@ public:
     QQuickItem *down;
     QQuickItem *tab;
     QQuickItem *backtab;
+
+#ifndef QT_NO_BITFIELDS
     bool leftSet : 1;
     bool rightSet : 1;
     bool upSet : 1;
     bool downSet : 1;
     bool tabSet : 1;
     bool backtabSet : 1;
+#else
+    bool leftSet;
+    bool rightSet;
+    bool upSet;
+    bool downSet;
+    bool tabSet;
+    bool backtabSet;
+#endif
 };
 
 class Q_QUICK_PRIVATE_EXPORT QQuickKeyNavigationAttached : public QObject, public QQuickItemKeyFilter

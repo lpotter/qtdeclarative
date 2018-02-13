@@ -127,9 +127,15 @@ public:
     QQmlChangeSet pendingChanges;
     QHash<QQmlChangeSet::MoveKey, FxViewItem *> removedItems;
 
+#ifndef QT_NO_BITFIELDS
     bool active : 1;
     bool currentChanged : 1;
     bool currentRemoved : 1;
+#else
+    bool active;
+    bool currentChanged;
+    bool currentRemoved;
+#endif
 };
 
 
@@ -324,7 +330,7 @@ public:
 
     mutable qreal minExtent;
     mutable qreal maxExtent;
-
+#ifndef Q_OS_HTML5
     bool ownModel : 1;
     bool wrap : 1;
     bool keyNavigationEnabled : 1;
@@ -341,6 +347,25 @@ public:
     bool inRequest : 1;
     bool runDelayedRemoveTransition : 1;
     bool delegateValidated : 1;
+#else
+
+    bool ownModel = 1;
+    bool wrap = 1;
+    bool keyNavigationEnabled = 1;
+    bool explicitKeyNavigationEnabled = 1;
+    bool inLayout = 1;
+    bool inViewportMoved = 1;
+    bool forceLayout = 1;
+    bool currentIndexCleared = 1;
+    bool haveHighlightRange = 1;
+    bool autoHighlight = 1;
+    bool highlightRangeStartValid = 1;
+    bool highlightRangeEndValid = 1;
+    bool fillCacheBuffer = 1;
+    bool inRequest = 1;
+    bool runDelayedRemoveTransition = 1;
+    bool delegateValidated = 1;
+#endif
 
 protected:
     virtual Qt::Orientation layoutOrientation() const = 0;

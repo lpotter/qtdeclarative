@@ -86,8 +86,13 @@ Q_SIGNALS:
 private:
     qreal m_width;
     QColor m_color;
+#ifndef QT_NO_BITFIELDS
     bool m_aligned : 1;
     bool m_valid : 1;
+#else
+    bool m_aligned;
+    bool m_valid;
+#endif
 };
 
 class Q_QUICK_PRIVATE_EXPORT QQuickGradientStop : public QObject

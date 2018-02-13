@@ -85,6 +85,7 @@ public:
     bool isClickConnected();
     bool isWheelConnected();
 
+#ifndef QT_NO_BITFIELDS
     bool enabled : 1;
     bool scrollGestureEnabled : 1;
     bool hovered : 1;
@@ -95,6 +96,18 @@ public:
     bool preventStealing : 1;
     bool propagateComposedEvents : 1;
     bool overThreshold : 1;
+#else
+    bool enabled;
+    bool scrollGestureEnabled;
+    bool hovered;
+    bool longPress;
+    bool moved;
+    bool stealMouse;
+    bool doubleClick;
+    bool preventStealing;
+    bool propagateComposedEvents;
+    bool overThreshold;
+#endif
     Qt::MouseButtons pressed;
     int pressAndHoldInterval;
 #if QT_CONFIG(draganddrop)

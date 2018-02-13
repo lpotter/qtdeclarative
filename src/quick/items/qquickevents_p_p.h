@@ -181,9 +181,15 @@ private:
     Qt::MouseButtons _buttons;
     Qt::KeyboardModifiers _modifiers;
     Qt::MouseEventSource _source;
+#ifndef QT_NO_BITFIELDS
     bool _wasHeld : 1;
     bool _isClick : 1;
     bool _accepted : 1;
+#else
+    bool _wasHeld;
+    bool _isClick;
+    bool _accepted;
+#endif
     Qt::MouseEventFlags _flags;
 };
 

@@ -396,9 +396,13 @@ Q_SIGNALS:
 
 public:
     QPointer<QQuickItemView> m_view;
+#ifndef QT_NO_BITFIELDS
     bool m_isCurrent : 1;
     bool m_delayRemove : 1;
-
+#else
+    bool m_isCurrent;
+    bool m_delayRemove;
+#endif
     // current only used by list view
     mutable QString m_section;
     QString m_prevSection;

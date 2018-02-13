@@ -76,9 +76,15 @@ private:
     QPointer<QQmlInstanceModel> model;
     QVariant dataSource;
     QPointer<QObject> dataSourceAsObject;
+#ifndef QT_NO_BITFIELDS
     bool ownModel : 1;
     bool dataSourceIsObject : 1;
     bool delegateValidated : 1;
+#else
+    bool ownModel;
+    bool dataSourceIsObject;
+    bool delegateValidated : 1;
+#endif
     int itemCount;
 
     QVector<QPointer<QQuickItem> > deletables;
