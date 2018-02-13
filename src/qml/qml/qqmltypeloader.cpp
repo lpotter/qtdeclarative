@@ -375,7 +375,11 @@ May only be called from the load thread, or after the blob isCompleteOrError().
 */
 QUrl QQmlDataBlob::finalUrl() const
 {
+#ifndef Q_OS_HTML5
     Q_ASSERT(isCompleteOrError() || (m_typeLoader && m_typeLoader->m_thread->isThisThread()));
+#else
+    Q_ASSERT(isCompleteOrError() || m_typeLoader);
+#endif
     return m_finalUrl;
 }
 
@@ -384,7 +388,11 @@ Returns the finalUrl() as a string.
 */
 QString QQmlDataBlob::finalUrlString() const
 {
+#ifndef Q_OS_HTML5
     Q_ASSERT(isCompleteOrError() || (m_typeLoader && m_typeLoader->m_thread->isThisThread()));
+#else
+    Q_ASSERT(isCompleteOrError() || m_typeLoader);
+#endif
     if (m_finalUrlString.isEmpty())
         m_finalUrlString = m_finalUrl.toString();
 
@@ -486,8 +494,8 @@ void QQmlDataBlob::addDependency(QQmlDataBlob *blob)
 {
 #ifndef Q_OS_HTML5
     ASSERT_CALLBACK();
-#endif
     Q_ASSERT(status() != Null);
+#endif
 
     if (!blob ||
         blob->status() == Error || blob->status() == Complete ||
