@@ -191,12 +191,22 @@ private:
     QSize m_textureSize;
     Format m_format;
     int m_samples;
+#ifndef QT_NO_BITFIELDS
     uint m_live : 1;
     uint m_hideSource : 1;
     uint m_mipmap : 1;
     uint m_recursive : 1;
     uint m_grab : 1;
     uint m_textureMirroring : 2; // Stores TextureMirroring enum
+#else
+    uint m_live;
+    uint m_hideSource;
+    uint m_mipmap;
+    uint m_recursive;
+    uint m_grab;
+    uint m_textureMirroring; // Stores TextureMirroring enum
+#endif
+
 };
 
 QT_END_NAMESPACE
