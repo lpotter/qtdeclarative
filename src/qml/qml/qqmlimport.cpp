@@ -1282,7 +1282,6 @@ bool QQmlImportsPrivate::locateQmldir(const QString &uri, int vmaj, int vmin, QQ
                 interceptor ? QQmlImportDatabase::LocalOrRemote : QQmlImportDatabase::Local);
 
     // Search local import paths for a matching version
-    QStringList localImportPaths = database->importPathList(QQmlImportDatabase::Local);
     const QStringList qmlDirPaths = QQmlImports::completeQmldirPaths(uri, localImportPaths, vmaj, vmin);
     for (QString qmldirPath : qmlDirPaths) {
         if (interceptor) {
