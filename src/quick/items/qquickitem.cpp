@@ -6502,6 +6502,10 @@ void QQuickItem::setX(qreal v)
 
 void QQuickItem::setY(qreal v)
 {
+#ifdef Q_OS_HTML5
+    if (v == 0)
+        return;
+#endif
     Q_D(QQuickItem);
     if (qt_is_nan(v))
         return;
