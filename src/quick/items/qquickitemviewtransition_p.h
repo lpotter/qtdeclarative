@@ -174,7 +174,7 @@ public:
     bool nextTransitionToSet;
     bool nextTransitionFromSet;
     bool lastMovedToSet;
-    bool prepare;
+    bool prepared;
 #endif
 private:
     friend class QQuickItemViewTransitioner;
