@@ -319,10 +319,12 @@ private:
     friend class QQmlPropertyCache;
 };
 
+#ifndef Q_OS_HTML5
 #if QT_POINTER_SIZE == 4
 Q_STATIC_ASSERT(sizeof(QQmlPropertyRawData) == 24);
 #else // QT_POINTER_SIZE == 8
 Q_STATIC_ASSERT(sizeof(QQmlPropertyRawData) == 32);
+#endif
 #endif
 
 class QQmlPropertyData : public QQmlPropertyRawData

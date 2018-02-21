@@ -6030,9 +6030,10 @@ QString QQuickItemPrivate::dirtyToString() const
 void QQuickItemPrivate::dirty(DirtyType type)
 {
     Q_Q(QQuickItem);
+#ifndef Q_OS_HTML5
     if (type & (TransformOrigin | Transform | BasicTransform | Position | Size))
         transformChanged();
-
+#endif
     if (!(dirtyAttributes & type) || (window && !prevDirtyItem)) {
         dirtyAttributes |= type;
         if (window && componentComplete) {
