@@ -2516,6 +2516,10 @@ void QQuickItemViewPrivate::updateUnrequestedIndexes()
 
 void QQuickItemViewPrivate::updateUnrequestedPositions()
 {
+#ifdef Q_OS_HTML5
+    return;
+#endif
+
     for (QHash<QQuickItem*,int>::const_iterator it = unrequestedItems.cbegin(), cend = unrequestedItems.cend(); it != cend; ++it) {
         if (it.value() >= 0)
             repositionPackageItemAt(it.key(), it.value());
