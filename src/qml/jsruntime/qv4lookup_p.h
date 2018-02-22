@@ -67,36 +67,50 @@ namespace QV4 {
 struct Lookup {
     enum { Size = 4 };
     union {
-        ReturnedValue (*indexedGetter)(Lookup *l, ExecutionEngine *engine, const Value &object, const Value &index);
-        void (*indexedSetter)(Lookup *l, ExecutionEngine *engine, const Value &object, const Value &index, const Value &v);
         ReturnedValue (*getter)(Lookup *l, ExecutionEngine *engine, const Value &object);
         ReturnedValue (*globalGetter)(Lookup *l, ExecutionEngine *engine);
-        void (*setter)(Lookup *l, ExecutionEngine *engine, Value &object, const Value &v);
+        bool (*setter)(Lookup *l, ExecutionEngine *engine, Value &object, const Value &v);
     };
     union {
-        InternalClass *classList[Size];
         struct {
-            void *dummy0;
-            void *dummy1;
-            void *dummy2;
+            InternalClass *ic;
+            int offset;
+        } objectLookup;
+        struct {
+            const Value *data;
+            int icIdentifier;
+        } protoLookup;
+        struct {
+            InternalClass *ic;
+            InternalClass *ic2;
+            int offset;
+            int offset2;
+        } objectLookupTwoClasses;
+        struct {
+            const Value *data;
+            const Value *data2;
+            int icIdentifier;
+            int icIdentifier2;
+        } protoLookupTwoClasses;
+        struct {
+            // Make sure the next two values are in sync with protoLookup
+            const Value *data;
+            int icIdentifier;
+            unsigned type;
             Heap::Object *proto;
-        };
+        } primitiveLookup;
+        struct {
+            InternalClass *newClass;
+            int icIdentifier;
+            int offset;
+        } insertionLookup;
     };
-    union {
-        int level;
-        uint index2;
-        unsigned type;
-    };
-    uint index;
     uint nameIndex;
 
-    static ReturnedValue indexedGetterGeneric(Lookup *l, ExecutionEngine *engine, const Value &object, const Value &index);
-    static ReturnedValue indexedGetterFallback(Lookup *l, ExecutionEngine *engine, const Value &object, const Value &index);
-    static ReturnedValue indexedGetterObjectInt(Lookup *l, ExecutionEngine *engine, const Value &object, const Value &index);
-
-    static void indexedSetterGeneric(Lookup *l, ExecutionEngine *engine, const Value &object, const Value &index, const Value &v);
-    static void indexedSetterFallback(Lookup *l, ExecutionEngine *engine, const Value &object, const Value &index, const Value &value);
-    static void indexedSetterObjectInt(Lookup *l, ExecutionEngine *engine, const Value &object, const Value &index, const Value &v);
+    ReturnedValue resolveGetter(ExecutionEngine *engine, const Object *object);
+    ReturnedValue resolvePrimitiveGetter(ExecutionEngine *engine, const Value &object);
+    ReturnedValue resolveGlobalGetter(ExecutionEngine *engine);
+    void resolveProtoGetter(Identifier *name, const Heap::Object *proto);
 
     static ReturnedValue getterGeneric(Lookup *l, ExecutionEngine *engine, const Value &object);
     static ReturnedValue getterTwoClasses(Lookup *l, ExecutionEngine *engine, const Value &object);
@@ -104,54 +118,37 @@ struct Lookup {
 
     static ReturnedValue getter0MemberData(Lookup *l, ExecutionEngine *engine, const Value &object);
     static ReturnedValue getter0Inline(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue getter1(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue getter2(Lookup *l, ExecutionEngine *engine, const Value &object);
+    static ReturnedValue getterProto(Lookup *l, ExecutionEngine *engine, const Value &object);
     static ReturnedValue getter0Inlinegetter0Inline(Lookup *l, ExecutionEngine *engine, const Value &object);
     static ReturnedValue getter0Inlinegetter0MemberData(Lookup *l, ExecutionEngine *engine, const Value &object);
     static ReturnedValue getter0MemberDatagetter0MemberData(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue getter0Inlinegetter1(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue getter0MemberDatagetter1(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue getter1getter1(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue getterAccessor0(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue getterAccessor1(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue getterAccessor2(Lookup *l, ExecutionEngine *engine, const Value &object);
+    static ReturnedValue getterProtoTwoClasses(Lookup *l, ExecutionEngine *engine, const Value &object);
+    static ReturnedValue getterAccessor(Lookup *l, ExecutionEngine *engine, const Value &object);
+    static ReturnedValue getterProtoAccessor(Lookup *l, ExecutionEngine *engine, const Value &object);
+    static ReturnedValue getterProtoAccessorTwoClasses(Lookup *l, ExecutionEngine *engine, const Value &object);
 
-    static ReturnedValue primitiveGetter0Inline(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue primitiveGetter0MemberData(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue primitiveGetter1(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue primitiveGetterAccessor0(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue primitiveGetterAccessor1(Lookup *l, ExecutionEngine *engine, const Value &object);
+    static ReturnedValue primitiveGetterProto(Lookup *l, ExecutionEngine *engine, const Value &object);
+    static ReturnedValue primitiveGetterAccessor(Lookup *l, ExecutionEngine *engine, const Value &object);
     static ReturnedValue stringLengthGetter(Lookup *l, ExecutionEngine *engine, const Value &object);
-    static ReturnedValue arrayLengthGetter(Lookup *l, ExecutionEngine *engine, const Value &object);
 
     static ReturnedValue globalGetterGeneric(Lookup *l, ExecutionEngine *engine);
-    static ReturnedValue globalGetter0Inline(Lookup *l, ExecutionEngine *engine);
-    static ReturnedValue globalGetter0MemberData(Lookup *l, ExecutionEngine *engine);
-    static ReturnedValue globalGetter1(Lookup *l, ExecutionEngine *engine);
-    static ReturnedValue globalGetter2(Lookup *l, ExecutionEngine *engine);
-    static ReturnedValue globalGetterAccessor0(Lookup *l, ExecutionEngine *engine);
-    static ReturnedValue globalGetterAccessor1(Lookup *l, ExecutionEngine *engine);
-    static ReturnedValue globalGetterAccessor2(Lookup *l, ExecutionEngine *engine);
+    static ReturnedValue globalGetterProto(Lookup *l, ExecutionEngine *engine);
+    static ReturnedValue globalGetterProtoAccessor(Lookup *l, ExecutionEngine *engine);
 
-    static void setterGeneric(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-    static void setterTwoClasses(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-    static void setterFallback(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-    static void setter0(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-    static void setter0Inline(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-    static void setterInsert0(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-    static void setterInsert1(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-    static void setterInsert2(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-    static void setter0setter0(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
-
-    ReturnedValue lookup(const Value &thisObject, Object *obj, PropertyAttributes *attrs);
-    ReturnedValue lookup(const Object *obj, PropertyAttributes *attrs);
-
+    bool resolveSetter(ExecutionEngine *engine, Object *object, const Value &value);
+    static bool setterGeneric(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
+    static bool setterTwoClasses(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
+    static bool setterFallback(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
+    static bool setter0(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
+    static bool setter0Inline(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
+    static bool setter0setter0(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
+    static bool setterInsert(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
+    static bool arrayLengthSetter(Lookup *l, ExecutionEngine *engine, Value &object, const Value &value);
 };
 
 Q_STATIC_ASSERT(std::is_standard_layout<Lookup>::value);
 // Ensure that these offsets are always at this point to keep generated code compatible
 // across 32-bit and 64-bit (matters when cross-compiling).
-Q_STATIC_ASSERT(offsetof(Lookup, indexedGetter) == 0);
 Q_STATIC_ASSERT(offsetof(Lookup, getter) == 0);
 
 }

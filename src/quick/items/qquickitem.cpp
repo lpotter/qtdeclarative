@@ -8484,10 +8484,8 @@ void QQuickItemLayer::updateGeometry()
     QQuickItem *l = m_effect ? (QQuickItem *) m_effect : (QQuickItem *) m_effectSource;
     Q_ASSERT(l);
     QRectF bounds = m_item->clipRect();
-    l->setWidth(bounds.width());
-    l->setHeight(bounds.height());
-    l->setX(bounds.x() + m_item->x());
-    l->setY(bounds.y() + m_item->y());
+    l->setSize(bounds.size());
+    l->setPosition(bounds.topLeft() + m_item->position());
 }
 
 void QQuickItemLayer::updateMatrix()
@@ -8541,25 +8539,25 @@ QAccessible::Role QQuickItemPrivate::accessibleRole() const
 namespace QV4 {
 namespace Heap {
 struct QQuickItemWrapper : public QObjectWrapper {
+    static void markObjects(QV4::Heap::Base *that, QV4::MarkStack *markStack);
 };
 }
 }
 
 struct QQuickItemWrapper : public QV4::QObjectWrapper {
     V4_OBJECT2(QQuickItemWrapper, QV4::QObjectWrapper)
-    static void markObjects(QV4::Heap::Base *that, QV4::MarkStack *markStack);
 };
 
 DEFINE_OBJECT_VTABLE(QQuickItemWrapper);
 
-void QQuickItemWrapper::markObjects(QV4::Heap::Base *that, QV4::MarkStack *markStack)
+void QV4::Heap::QQuickItemWrapper::markObjects(QV4::Heap::Base *that, QV4::MarkStack *markStack)
 {
-    QObjectWrapper::Data *This = static_cast<QObjectWrapper::Data *>(that);
+    QObjectWrapper *This = static_cast<QObjectWrapper *>(that);
     if (QQuickItem *item = static_cast<QQuickItem*>(This->object())) {
         for (QQuickItem *child : qAsConst(QQuickItemPrivate::get(item)->childItems))
             QV4::QObjectWrapper::markWrapper(child, markStack);
     }
-    QV4::QObjectWrapper::markObjects(that, markStack);
+    QObjectWrapper::markObjects(that, markStack);
 }
 
 quint64 QQuickItemPrivate::_q_createJSWrapper(QV4::ExecutionEngine *engine)

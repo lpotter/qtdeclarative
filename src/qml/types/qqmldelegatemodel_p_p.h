@@ -126,9 +126,9 @@ public:
     virtual void setValue(const QString &role, const QVariant &value) { Q_UNUSED(role); Q_UNUSED(value); }
     virtual bool resolveIndex(const QQmlAdaptorModel &, int) { return false; }
 
-    static void get_model(const QV4::BuiltinFunction *, QV4::Scope &scope, QV4::CallData *callData);
-    static void get_groups(const QV4::BuiltinFunction *, QV4::Scope &scope, QV4::CallData *callData);
-    static void set_groups(const QV4::BuiltinFunction *, QV4::Scope &scope, QV4::CallData *callData);
+    static QV4::ReturnedValue get_model(const QV4::BuiltinFunction *, QV4::CallData *callData);
+    static QV4::ReturnedValue get_groups(const QV4::BuiltinFunction *, QV4::CallData *callData);
+    static QV4::ReturnedValue set_groups(const QV4::BuiltinFunction *, QV4::CallData *callData);
     static QV4::ReturnedValue get_member(QQmlDelegateModelItem *thisItem, uint flag, const QV4::Value &);
     static QV4::ReturnedValue set_member(QQmlDelegateModelItem *thisItem, uint flag, const QV4::Value &arg);
     static QV4::ReturnedValue get_index(QQmlDelegateModelItem *thisItem, uint flag, const QV4::Value &arg);
@@ -319,12 +319,21 @@ public:
     int m_groupCount;
 
     QQmlListCompositor::Group m_compositorGroup;
+#ifndef QT_NO_BITFIELDS
     bool m_complete : 1;
     bool m_delegateValidated : 1;
     bool m_reset : 1;
     bool m_transaction : 1;
     bool m_incubatorCleanupScheduled : 1;
     bool m_waitingToFetchMore : 1;
+#else
+    bool m_complete;
+    bool m_delegateValidated;
+    bool m_reset;
+    bool m_transaction;
+    bool m_incubatorCleanupScheduled;
+    bool m_waitingToFetchMore;
+#endif
 
     union {
         struct {

@@ -107,8 +107,8 @@ inline double trunc(double d) { return d > 0 ? floor(d) : ceil(d); }
 #  if defined(Q_OS_LINUX)
 #    define V4_ENABLE_JIT
 #  endif
-#elif defined(Q_PROCESSOR_MIPS_32) && defined(Q_OS_LINUX)
-#  define V4_ENABLE_JIT
+//#elif defined(Q_PROCESSOR_MIPS_32) && defined(Q_OS_LINUX)
+//#  define V4_ENABLE_JIT
 #endif
 
 // Black list some platforms
@@ -147,6 +147,12 @@ QT_BEGIN_NAMESPACE
 
 namespace QV4 {
 
+namespace Compiler {
+    struct Module;
+    struct Context;
+    struct JSUnitGenerator;
+}
+
 namespace Heap {
     struct Base;
     struct MemberData;
@@ -157,7 +163,6 @@ namespace Heap {
     struct ObjectPrototype;
 
     struct ExecutionContext;
-    struct GlobalContext;
     struct CallContext;
     struct ScriptFunction;
 
@@ -182,12 +187,12 @@ namespace Heap {
 }
 
 class MemoryManager;
+class ExecutableAllocator;
 struct String;
 struct Object;
 struct ObjectPrototype;
 struct ObjectIterator;
 struct ExecutionContext;
-struct GlobalContext;
 struct CallContext;
 struct ScriptFunction;
 struct InternalClass;
@@ -243,12 +248,6 @@ struct IdentifierTable;
 class RegExpCache;
 class MultiplyWrappedQObjectMap;
 
-namespace Global {
-    enum {
-        ReservedArgumentCount = 6
-    };
-}
-
 enum PropertyFlag {
     Attr_Data = 0,
     Attr_Accessor = 0x1,
@@ -272,6 +271,7 @@ struct PropertyAttributes
             uchar m_mask : 4;
         };
         struct {
+#ifndef QT_NO_BITFIELDS
             uchar m_type : 1;
             uchar m_writable : 1;
             uchar m_enumerable : 1;
@@ -280,6 +280,16 @@ struct PropertyAttributes
             uchar writable_set : 1;
             uchar enumerable_set : 1;
             uchar configurable_set : 1;
+#else
+            uchar m_type = 1;
+            uchar m_writable = 1;
+            uchar m_enumerable = 1;
+            uchar m_configurable = 1;
+            uchar type_set = 1;
+            uchar writable_set = 1;
+            uchar enumerable_set = 1;
+            uchar configurable_set = 1;
+#endif
         };
     };
 
@@ -349,11 +359,11 @@ struct PropertyAttributes
     }
 };
 
-struct StackFrame {
+struct Q_QML_EXPORT StackFrame {
     QString source;
     QString function;
-    int line;
-    int column;
+    int line = -1;
+    int column = -1;
 };
 typedef QVector<StackFrame> StackTrace;
 
