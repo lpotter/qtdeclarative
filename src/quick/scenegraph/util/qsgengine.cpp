@@ -129,7 +129,7 @@ void QSGEngine::initialize(QOpenGLContext *context)
         d->sgRenderContext->initialize(context);
 #if QT_CONFIG(opengl)
         if (context)
-            connect(context, &QOpenGLContext::aboutToBeDestroyed, this, &QSGEngine::invalidate);
+            connect(context, &QOpenGLContext::aboutToBeDestroyed, this, &QSGEngine::invalidate, Qt::DirectConnection);
 #endif
     }
 }
